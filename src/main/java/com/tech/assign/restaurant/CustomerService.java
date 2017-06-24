@@ -60,7 +60,7 @@ public class CustomerService {
 	public Item findMaxSatisfactionLabel() {
 
 		readTimeAndItemCount(map);
-		
+		menu.populateItems(menuItemsCount);
 		calculateNoOfItemsToEat(totalTimeToEat);
 
 		return findMaxSatisfactoryLevel(menu.getItems());
@@ -78,7 +78,7 @@ public class CustomerService {
 		totalTimeToEat = Integer.parseInt(entry.getKey());
 		menuItemsCount = Integer.parseInt(entry.getValue());
 		totalTimeToEat = totalTimeToEat * 60;
-		menu.populateItems(menuItemsCount);
+		
 		map.remove(entry.getKey());
 		return map;
 
@@ -128,7 +128,7 @@ public class CustomerService {
 		System.out.println(customerName + " had " + menu.getItems().get(itemCount).getName() + " for about "
 				+ menu.getItems().get(itemCount).getTimeTaken() + " secs " + " and has got satisfactory level of "
 				+ menu.getItems().get(itemCount).getSatisfactoryLimit());
-		itemCount = itemCount + 1;
+		
 	}
 
 }
