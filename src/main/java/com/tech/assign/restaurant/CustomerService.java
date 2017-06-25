@@ -24,7 +24,7 @@ public class CustomerService {
 	private int sumTimeToEatAllItem = 0;
 	private int menuItemsCount = 0;
 	private int totalTimeToEat = 0;
-	Map<String,String> map ;
+	private Map<String,String> map ;
 	private Boolean hasCrossedTime = Boolean.FALSE;
 
 	private Menu menu;
