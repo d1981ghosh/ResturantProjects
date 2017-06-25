@@ -32,7 +32,7 @@ public class Menu {
 	public void populateItems(int menuItemsCount) {
 		List<Item> items = new ArrayList<Item>();
 		for (int i = 0; i < menuItemsCount; i++) {
-			items.add(new Item(i, "Dish-" + (i+1)));
+			items.add(new Item((i+1), "Dish-" + (i+1)));
 		}
 		
 		setItems(items);
