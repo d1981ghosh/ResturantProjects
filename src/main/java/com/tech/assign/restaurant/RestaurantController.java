@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestaurantController {
 	final String custName = "Gordon Ramsey";
 	@Autowired
-	FileReaderService fileReaderServ = new FileReaderService();
+	FileReaderService fileReaderServ ;
 	@Autowired
-	Menu menu =new Menu() ;
+	Menu menu ;
 
 
 	public RestaurantController() {}
