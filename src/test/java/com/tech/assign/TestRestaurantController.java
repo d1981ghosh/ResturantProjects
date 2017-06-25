@@ -28,8 +28,8 @@ public class TestRestaurantController extends RestaurantContTest{
 	public void testGetMaxSatisfactionLabel() throws Exception {
 		mockMvc.perform(get("/maxSatisfactionLabel")).andExpect(status().isOk())
 		.andExpect(content().contentType("application/json;charset=UTF-8"))
-		.andExpect(jsonPath("$.id").value("3")).andExpect(jsonPath("$.name").value("Dish-3"))
-		.andExpect(jsonPath("$.satisfactoryLimit").value("50074")).andExpect(jsonPath("$.timeTaken").value("659"));
+		.andExpect(jsonPath("$.id").value("46")).andExpect(jsonPath("$.name").value("Dish-47"))
+		.andExpect(jsonPath("$.satisfactoryLimit").value("99506")).andExpect(jsonPath("$.timeTaken").value("883"));
 
 
 	}
