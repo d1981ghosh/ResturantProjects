@@ -10,18 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestaurantController {
 	final String custName = "Gordon Ramsey";
 	@Autowired
-	FileReaderService fileReaderServ ;
+	FileReaderService fileReaderServ = new FileReaderService() ;
 	@Autowired
-	Menu menu ;
+	Menu menu = new Menu() ;
 
 
 	public RestaurantController() {}
 
 	@RequestMapping(value = "/maxSatisfactionLabel")
-	public Item getMaxSatisfactionLabel()
+	public Integer getMaxSatisfactionLabel()
 	{
 		Map<String,String> map = fileReaderServ.readFromFile();
-		return new CustomerService(custName,map,menu).findMaxSatisfactionLabel();
+		return new CustomerService(map).findMaxSatisfactionLabel();
 
 	}
 
