@@ -4,7 +4,6 @@ package com.tech.assign.restaurant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.stereotype.Service;
 
@@ -21,11 +20,9 @@ public class CustomerService {
 	private String customerName;
 
 	// Time in seconds
-	private int sumTimeToEatAllItem = 0;
 	private int menuItemsCount = 0;
 	private int totalTimeToEat = 0;
 	private Map<String,String> map ;
-	private Boolean hasCrossedTime = Boolean.FALSE;
 
 	private Menu menu;
 
@@ -36,22 +33,46 @@ public class CustomerService {
 		this.map = map;
 	}
 	/*
-	 * Calculate # of items can be eaten within the maximum time t minutes
+	 * Calculate total no. of items can be eaten within the maximum time t minutes 
+	 * and populating the SatisfactoryLimit & TimeTaken 
 	 * 
-	 *  @param totalTimeToEat
+	 *  
 	 */
-	private void calculateNoOfItemsToEat(int totalTimeToEat) {
-		int itemCnt = 0;
+	private void calculateTotalItemsToEat() {
+
+		int timeTakenPerDish = 0;
+		int satisfactoryLimit = 0;
+		int itemCount = 0;
 		for (Map.Entry<String, String> entry : map.entrySet())
 		{
-			if (!hasCrossedTime) {
-				sumOfTimeTakenForDish(entry,itemCnt);
-				itemCnt++;
+
+			timeTakenPerDish = Integer.parseInt(entry.getValue());
+			satisfactoryLimit = Integer.parseInt(entry.getKey());
+			if(totalTimeToEat < timeTakenPerDish)
+			{
+				continue;
+			}
+			else if(totalTimeToEat > timeTakenPerDish)
+			{
+				totalTimeToEat = totalTimeToEat - timeTakenPerDish;
+				menu.getItems().get(itemCount).setSatisfactoryLimit(satisfactoryLimit);
+				menu.getItems().get(itemCount).setTimeTaken(timeTakenPerDish);
 			}
 			else
-				break;
+			{
+				menu.getItems().get(itemCount).setSatisfactoryLimit(satisfactoryLimit);
+				menu.getItems().get(itemCount).setTimeTaken(timeTakenPerDish);
+				totalTimeToEat = 0;
+			}
+
+			System.out.println(customerName + " had " + menu.getItems().get(itemCount).getName() + " for about "
+					+ menu.getItems().get(itemCount).getTimeTaken() + " secs " + " and has got satisfactory level of "
+					+ menu.getItems().get(itemCount).getSatisfactoryLimit());
+			itemCount ++;
+
 		}
-		//printAllSatisfactoryLimit();
+
+
 		return ;
 	}
 	/**
@@ -61,7 +82,7 @@ public class CustomerService {
 
 		readTimeAndItemCount(map);
 		menu.populateItems(menuItemsCount);
-		calculateNoOfItemsToEat(totalTimeToEat);
+		calculateTotalItemsToEat();
 
 		return findMaxSatisfactoryLevel(menu.getItems());
 
@@ -73,14 +94,14 @@ public class CustomerService {
 	 * 
 	 * @param map
 	 */
-	private Map<String,String> readTimeAndItemCount(Map<String,String> map) {
+	private void readTimeAndItemCount(Map<String,String> map) {
 		Map.Entry<String,String> entry=map.entrySet().iterator().next();
 		totalTimeToEat = Integer.parseInt(entry.getKey());
 		menuItemsCount = Integer.parseInt(entry.getValue());
 		totalTimeToEat = totalTimeToEat * 60;
-		
+
 		map.remove(entry.getKey());
-		return map;
+		return ;
 
 	}
 
@@ -95,40 +116,11 @@ public class CustomerService {
 	private Item findMaxSatisfactoryLevel(List<Item> itemList) {
 		Collections.sort(itemList, new SatisfactoryComparator());
 
-		System.out.println(customerName + " had " + " max satisfaction " + itemList.get(0).getSatisfactoryLimit()
+		System.out.println(customerName + " had max satisfaction " + itemList.get(0).getSatisfactoryLimit()
 				+ " for the item '"+ itemList.get(0).getName()+"' in Menu " );
 		return itemList.get(0);
 
 	}
 
-	/**
-	 * This will sum the time taken for each dish
-	 * and compares with the given input time. It will break out of the loop the
-	 * moment the value reaches its the given input time.
-	 * 
-	 * @param entry
-	 * @param itemCount
-	 */
-	private void sumOfTimeTakenForDish(Entry<String, String> entry, int itemCount) {
-
-		
-		int timeTakenPerDish = 0;
-		String time= entry.getKey();
-		String menuItemsCount=entry.getValue();
-		timeTakenPerDish = Integer.parseInt(menuItemsCount);
-
-		sumTimeToEatAllItem = sumTimeToEatAllItem + timeTakenPerDish;
-		if (sumTimeToEatAllItem > totalTimeToEat) {
-			hasCrossedTime = Boolean.TRUE;
-			return;
-		}
-		menu.getItems().get(itemCount).setSatisfactoryLimit(Integer.parseInt(time));
-		menu.getItems().get(itemCount).setTimeTaken(timeTakenPerDish);
-	
-		System.out.println(customerName + " had " + menu.getItems().get(itemCount).getName() + " for about "
-				+ menu.getItems().get(itemCount).getTimeTaken() + " secs " + " and has got satisfactory level of "
-				+ menu.getItems().get(itemCount).getSatisfactoryLimit());
-		
-	}
 
 }
