@@ -1,11 +1,14 @@
 package com.tech.assign.restaurant;
 
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+
+
 
 /**
  * Customer consumes items from the menu. Typically from the input file. For the
@@ -17,19 +20,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomerService {
 	public CustomerService() {}
-	private String customerName;
-
-	// Time in seconds
-	private int menuItemsCount = 0;
+	
 	private int totalTimeToEat = 0;
+	private int menuItemsCount = 0;
 	private Map<String,String> map ;
 
-	private Menu menu;
-
 	//Constructor of the CustomerService
-	public CustomerService(String customerName, Map<String,String> map, Menu menu) {
-		this.customerName = customerName;
-		this.menu = menu;
+	public CustomerService(Map<String,String> map) {
 		this.map = map;
 	}
 	/*
@@ -38,53 +35,55 @@ public class CustomerService {
 	 * 
 	 *  
 	 */
-	private void calculateTotalItemsToEat() {
 
-		int timeTakenPerDish = 0;
-		int satisfactoryLimit = 0;
+	private Integer calculateTotalItemsToEat() {
 		int itemCount = 0;
+		Integer[] eatingTimes = new Integer[map.size()];
+		Integer[] degreeOfSatisfactions = new Integer[map.size()];
 		for (Map.Entry<String, String> entry : map.entrySet())
 		{
-
-			timeTakenPerDish = Integer.parseInt(entry.getValue());
-			satisfactoryLimit = Integer.parseInt(entry.getKey());
-			if(totalTimeToEat < timeTakenPerDish)
-			{
-				continue;
-			}
-			else if(totalTimeToEat > timeTakenPerDish)
-			{
-				totalTimeToEat = totalTimeToEat - timeTakenPerDish;
-				menu.getItems().get(itemCount).setSatisfactoryLimit(satisfactoryLimit);
-				menu.getItems().get(itemCount).setTimeTaken(timeTakenPerDish);
-			}
-			else
-			{
-				menu.getItems().get(itemCount).setSatisfactoryLimit(satisfactoryLimit);
-				menu.getItems().get(itemCount).setTimeTaken(timeTakenPerDish);
-				totalTimeToEat = 0;
-			}
-
-			System.out.println(customerName + " had " + menu.getItems().get(itemCount).getName() + " for about "
-					+ menu.getItems().get(itemCount).getTimeTaken() + " secs " + " and has got satisfactory level of "
-					+ menu.getItems().get(itemCount).getSatisfactoryLimit());
-			itemCount ++;
-
+			degreeOfSatisfactions[itemCount] = Integer.parseInt(entry.getKey());
+			eatingTimes[itemCount] = Integer.parseInt(entry.getValue());
+			itemCount++;
 		}
-
-
-		return ;
+		
+		return getMaxEatingSatisfaction(totalTimeToEat,eatingTimes,degreeOfSatisfactions,menuItemsCount);
 	}
+	// Gordan's best satisfaction/performance on the act of eating
+		private Integer getMaxEatingSatisfaction(Integer timeLimit, Integer eatingTimes[], Integer degreeOfSatisfactions[],
+				Integer menuItemCount) {
+			if (menuItemCount != eatingTimes.length || menuItemCount != degreeOfSatisfactions.length) {
+				//throw new InvalidInputFormatException();
+			}
+			Integer i, w;
+			Integer satisfactionMatrix[][] = new Integer[menuItemCount + 1][timeLimit + 1];
+			for (i = 0; i <= menuItemCount; i++) {
+				for (w = 0; w <= timeLimit; w++) {
+					if (i == 0 || w == 0)
+						satisfactionMatrix[i][w] = 0;
+					else if (eatingTimes[i - 1] <= w)
+						satisfactionMatrix[i][w] = Math.max(
+								degreeOfSatisfactions[i - 1] + satisfactionMatrix[i - 1][w - eatingTimes[i - 1]],
+								satisfactionMatrix[i - 1][w]);
+					else
+						satisfactionMatrix[i][w] = satisfactionMatrix[i - 1][w];
+				}
+			}
+			String text = String.format(
+					"\nInput: \n\tTime Limit: %s\n\tEating Times: %s\n\tDegree Of Satisfaction: %s\n\tMenu Item Count:%s\nOutput: \n\tMax Sat. Degree:%s\n",
+					timeLimit, Arrays.toString(eatingTimes), Arrays.toString(degreeOfSatisfactions), menuItemCount,
+					satisfactionMatrix[menuItemCount][timeLimit]);
+			System.out.println(text);
+			return satisfactionMatrix[menuItemCount][timeLimit];
+		}
 	/**
 	 * This method return MaxSatisfactoryLevel 
 	 */
-	public Item findMaxSatisfactionLabel() {
+	public Integer findMaxSatisfactionLabel() {
 
 		readTimeAndItemCount(map);
-		menu.populateItems(menuItemsCount);
-		calculateTotalItemsToEat();
+		return calculateTotalItemsToEat();
 
-		return findMaxSatisfactoryLevel(menu.getItems());
 
 	}
 	/**
@@ -98,29 +97,12 @@ public class CustomerService {
 		Map.Entry<String,String> entry=map.entrySet().iterator().next();
 		totalTimeToEat = Integer.parseInt(entry.getKey());
 		menuItemsCount = Integer.parseInt(entry.getValue());
-		totalTimeToEat = totalTimeToEat * 60;
-
+		
 		map.remove(entry.getKey());
 		return ;
 
 	}
 
-	/**
-	 * Sort the Item array with the help of customized comparator class.
-	 * 
-	 * Identifies the max satisfactory Level that consumer has experienced with
-	 * the particular dish item.
-	 * 
-	 * @param itemList
-	 */
-	private Item findMaxSatisfactoryLevel(List<Item> itemList) {
-		Collections.sort(itemList, new SatisfactoryComparator());
-
-		System.out.println(customerName + " had max satisfaction " + itemList.get(0).getSatisfactoryLimit()
-				+ " for the item '"+ itemList.get(0).getName()+"' in Menu " );
-		return itemList.get(0);
-
-	}
-
+	
 
 }
