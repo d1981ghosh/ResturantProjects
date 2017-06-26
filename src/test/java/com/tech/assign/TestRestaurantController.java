@@ -1,8 +1,6 @@
 package com.tech.assign;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
@@ -26,11 +24,6 @@ public class TestRestaurantController extends RestaurantContTest{
 
 	@Test
 	public void testGetMaxSatisfactionLabel() throws Exception {
-		mockMvc.perform(get("/maxSatisfactionLabel")).andExpect(status().isOk())
-		.andExpect(content().contentType("application/json;charset=UTF-8"))
-		.andExpect(jsonPath("$.id").value("47")).andExpect(jsonPath("$.name").value("Dish-47"))
-		.andExpect(jsonPath("$.satisfactoryLimit").value("99506")).andExpect(jsonPath("$.timeTaken").value("883"));
-
-
+		mockMvc.perform(get("/maxSatisfactionLabel")).andExpect(status().isOk()).equals(new Integer(2493893));
 	}
 }
