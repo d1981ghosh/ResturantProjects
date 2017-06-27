@@ -10,13 +10,6 @@ import org.springframework.stereotype.Service;
 
 
 
-/**
- * Customer consumes items from the menu. Typically from the input file. For the
- * given T minutes, customer will start to consume dishes and this will happen
- * until the summation of the time he takes to consume N dishes is less than the
- * given T minutes.
- *
- */
 @Service
 public class CustomerService {
 	public CustomerService() {}
