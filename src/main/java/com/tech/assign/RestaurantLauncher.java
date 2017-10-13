@@ -8,6 +8,7 @@ public class RestaurantLauncher {
 
 	public static void main(String[] args) {
 		SpringApplication.run(RestaurantLauncher.class, args);
+		System.out.println("This is for test");
 	}
 
 }
